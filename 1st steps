@@ -1,0 +1,10 @@
+"🚀 Avancée sur le projet final – Mise en place du déplacement de la tête du snake (Séance 6 – Étape 4.2)
+
+Aujourd'hui, j'ai commencé à poser les bases du jeu Snaketris en me concentrant sur le déplacement de la tête du serpent. 
+Le snake avance désormais tout seul dans une direction initiale, et je peux le diriger grâce aux flèches du clavier. 
+Le changement de direction interdit les demi-tours, comme demandé dans l'énoncé.
+
+C'est la première vraie interaction utilisateur du jeu, ça fait plaisir de le voir bouger 😄
+
+Prochaine étape : gérer les anneaux du corps, la croissance et les collisions.
+Petit à petit, le projet prend forme 💪"
