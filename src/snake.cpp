@@ -1,5 +1,6 @@
 #include "snake.hpp"
-#include "view.hpp" // Pour utiliser les textures (head_open_...)
+#include "view.hpp"
+#include <iostream>
 
 // Initialise le serpent à une position et une direction
 void init_snake(Snake* s, int x, int y, Direction d) {
@@ -10,7 +11,7 @@ void init_snake(Snake* s, int x, int y, Direction d) {
     s->tail = nullptr;
 }
 
-// Déplacement du serpent ( tête et corps)
+// Déplacement du serpent (tête + anneaux)
 void move_snake(Snake* s) {
     int prev_x = s->x;
     int prev_y = s->y;
@@ -23,7 +24,7 @@ void move_snake(Snake* s) {
         case WEST:  s->x -= 1; break;
     }
 
-    // === Déplacement des anneaux ===
+    // === Déplacer les anneaux ===
     Ring* current = s->head;
     while (current) {
         int temp_x = current->x;
@@ -39,10 +40,21 @@ void move_snake(Snake* s) {
     }
 }
 
+// Vérifie si la tête touche un anneau du corps
+bool check_self_collision(Snake* s) {
+    Ring* current = s->tail;
+    while (current) {
+        if (current->x == s->x && current->y == s->y) {
+            return true;
+        }
+        current = current->next;
+    }
+    return false;
+}
 
-// Affichage de la tête du serpent
+// Affiche la tête du serpent
 void draw_snake(Window* window, Snake* s) {
-    int cell_width  = window->width / 10;   // à adapter si monde ≠ 10x10
+    int cell_width  = window->width / 10;
     int cell_height = window->height / 10;
 
     SDL_Texture* head = nullptr;
@@ -56,7 +68,8 @@ void draw_snake(Window* window, Snake* s) {
 
     draw_texture(window, head, s->x * cell_width, s->y * cell_height, cell_width, cell_height);
 }
-// Affichage de les anneaux (corps du serpent)
+
+// Affiche les anneaux (corps)
 void draw_body(Window* window, Snake* s) {
     int cell_width  = window->width / 10;
     int cell_height = window->height / 10;
@@ -65,7 +78,6 @@ void draw_body(Window* window, Snake* s) {
     while (current) {
         SDL_Texture* body = nullptr;
 
-        // Choisir la texture selon la couleur (nourriture)
         switch (current->food) {
             case RED:   body = window->body_red;   break;
             case GREEN: body = window->body_green; break;
@@ -84,45 +96,55 @@ void draw_body(Window* window, Snake* s) {
     }
 }
 
-
-// Change la direction du Snake, sauf si on demande un demi-tour
+// Change de direction (sans demi-tour)
 void change_direction(Snake* s, Direction new_dir) {
-    cout << "Changement direction vers : " << new_dir << endl;
-    // Interdire le demi-tour
     if ((s->dir == NORTH && new_dir == SOUTH) ||
         (s->dir == SOUTH && new_dir == NORTH) ||
         (s->dir == EAST  && new_dir == WEST)  ||
-        (s->dir == WEST  && new_dir == EAST)){
-        cout << "→ Demi-tour refusé" << endl;
+        (s->dir == WEST  && new_dir == EAST)) {
         return;
     }
-
-    // Sinon, on change la direction
     s->dir = new_dir;
-    cout << "→ Direction changée avec succès" << endl;
 }
 
-// Ajoute un anneau juste derrière la tête du Snake
+// Ajoute un anneau derrière la tête
 void add_ring(Snake* s, FoodType food) {
     Ring* new_ring = new Ring;
-
-    // La nouvelle position de l’anneau = ancienne position de la tête
     new_ring->x = s->x;
     new_ring->y = s->y;
     new_ring->food = food;
-
     new_ring->prev = s->head;
     new_ring->next = nullptr;
 
     if (s->head) {
         s->head->next = new_ring;
     } else {
-        // Si c’est le tout premier anneau, c’est aussi la queue
         s->tail = new_ring;
     }
 
-    // Met à jour la nouvelle tête du corps
     s->head = new_ring;
 }
 
+// Supprime le milieu d’un triplet de même couleur
+void check_triple_color(Snake* s) {
+    Ring* r = s->tail;
+    while (r && r->next && r->next->next) {
+        FoodType a = r->food;
+        FoodType b = r->next->food;
+        FoodType c = r->next->next->food;
 
+        if (a == b && b == c) {
+            Ring* mid = r->next;
+            r->next = mid->next;
+            if (mid->next) mid->next->prev = r;
+
+            if (s->head == mid) s->head = mid->prev;
+            if (s->tail == mid) s->tail = mid->next;
+
+            delete mid;
+            std::cout << "💥 Triplet détecté : anneau du milieu supprimé." << std::endl;
+            return;
+        }
+        r = r->next;
+    }
+}

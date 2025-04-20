@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+
 #include "window.hpp"
 #include "enum.hpp"
 #include "world.hpp"
@@ -75,6 +76,12 @@ int main(int argc, char** argv) {
         Uint32 now = SDL_GetTicks();
         if (!gameover && now - last_update > 500) {
             move_snake(&snake); 
+
+            // collision avec soi-même
+            if (check_self_collision(&snake)) {
+                cout << "💥 Auto-collision ! GAME OVER " << endl;
+                gameover = true;
+            }
     
             // vérifier les collisions
             if (snake.x < 0 || snake.x >= world.width ||
@@ -86,10 +93,19 @@ int main(int argc, char** argv) {
             // Vérifie si le Snake mange une nourriture
             FoodType eaten = get_food(&world, snake.x, snake.y);
             if (eaten != NONE) {
-                set_food(&world, snake.x, snake.y, NONE);  // retirer la nourriture
-                add_ring(&snake, eaten);  // Ajout d'un anneau 
-                add_random_food(&world);  // remplacer la nourriture
+                set_food(&world, snake.x, snake.y, NONE);
+            
+                // Nourriture étoile → ne pas ajouter d’anneau, mais activer le tetris
+                if (eaten == STAR) {
+                    cout << "🌟 Nourriture étoile mangée → effet TETRIS activé !" << endl;
+                    check_triple_color(&snake);
+                } else {
+                    add_ring(&snake, eaten);            // Ajoute un anneau de couleur
+                }
+            
+                add_random_food(&world);
             }
+            
 
             last_update = now;
         }

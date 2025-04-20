@@ -31,6 +31,14 @@ void add_random_food(World* world) {
         y = rand() % world->height;
     } while (get_food(world, x, y) != NONE);
 
-    int type = 1 + rand() % 3; // 1=RED, 2=GREEN, 3=BLUE
-    set_food(world, x, y, static_cast<FoodType>(type));
+    int roll = rand() % 6; // 1/6 chance d’avoir une étoile
+    FoodType type;
+    if (roll == 0)
+        type = STAR;
+    else
+        type = static_cast<FoodType>(1 + rand() % 3); // RED, GREEN, BLUE
+
+    set_food(world, x, y, type);
 }
+
+
