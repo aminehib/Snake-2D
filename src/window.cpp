@@ -1,0 +1,114 @@
+#include "window.hpp"
+#include <iostream>
+
+void init_window(Window* window, int width, int height, string title) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        cerr << "Erreur SDL_Init: " << SDL_GetError() << endl;
+        SDL_Quit();
+    }
+
+    if (TTF_Init() < 0) {
+        cerr << "Erreur TTF_Init: " << TTF_GetError() << endl;
+        SDL_Quit();
+    }
+
+    window->width = width;
+    window->height = height;
+
+    if (SDL_CreateWindowAndRenderer(width, height, 0, &window->sdl_window, &window->sdl_renderer) < 0) {
+        cerr << "Erreur création fenêtre/rendu: " << SDL_GetError() << endl;
+        SDL_Quit();
+    }
+
+    SDL_SetWindowTitle(window->sdl_window, title.c_str());
+
+    window->sdl_font = TTF_OpenFont("VeraMono.ttf", 20);
+    if (window->sdl_font == nullptr) {
+        cerr << "Erreur chargement police: " << TTF_GetError() << endl;
+        SDL_Quit();
+    }
+}
+
+void close_window(Window* window) {
+    TTF_CloseFont(window->sdl_font);
+    SDL_DestroyRenderer(window->sdl_renderer);
+    SDL_DestroyWindow(window->sdl_window);
+    TTF_Quit();
+    SDL_Quit();
+}
+
+void set_color(SDL_Color* dst, int r, int g, int b, int a) {
+    dst->r = r;
+    dst->g = g;
+    dst->b = b;
+    dst->a = a;
+}
+
+void set_color(SDL_Color* dst, SDL_Color* src) {
+    *dst = *src;
+}
+
+void clear_window(Window* window) {
+    SDL_SetRenderDrawColor(window->sdl_renderer,
+                           window->background.r,
+                           window->background.g,
+                           window->background.b,
+                           window->background.a);
+    SDL_RenderClear(window->sdl_renderer);
+}
+
+void refresh_window(Window* window) {
+    SDL_RenderPresent(window->sdl_renderer);
+}
+
+void draw_fill_rectangle(Window* window, int x, int y, int w, int h) {
+    SDL_SetRenderDrawColor(window->sdl_renderer,
+                           window->foreground.r,
+                           window->foreground.g,
+                           window->foreground.b,
+                           window->foreground.a);
+    SDL_Rect rect = {x, y, w, h};
+    SDL_RenderFillRect(window->sdl_renderer, &rect);
+}
+
+SDL_Texture* load_image(Window* window, string file) {
+    SDL_Surface* surface = IMG_Load(file.c_str());
+    if (!surface) {
+        cerr << "Erreur IMG_Load : " << IMG_GetError() << endl;
+        return nullptr;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(window->sdl_renderer, surface);
+    SDL_FreeSurface(surface);
+    if (!texture) {
+        cerr << "Erreur création texture : " << SDL_GetError() << endl;
+        return nullptr;
+    }
+    return texture;
+}
+
+void draw_texture(Window* window, SDL_Texture* texture, int x, int y, int w, int h) {
+    SDL_Rect dest = {x, y, w, h};
+    SDL_RenderCopy(window->sdl_renderer, texture, NULL, &dest);
+}
+
+void draw_text(Window* window, string text, int x, int y) {
+    SDL_Surface* surface = TTF_RenderText_Shaded(window->sdl_font, text.c_str(),
+                                                 window->foreground, window->background);
+    if (!surface) {
+        cerr << "Erreur surface TTF : " << TTF_GetError() << endl;
+        return;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(window->sdl_renderer, surface);
+    SDL_FreeSurface(surface);
+    if (!texture) {
+        cerr << "Erreur texture TTF : " << SDL_GetError() << endl;
+        return;
+    }
+
+    int w, h;
+    SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+    draw_texture(window, texture, x, y, w, h);
+    SDL_DestroyTexture(texture);
+}
