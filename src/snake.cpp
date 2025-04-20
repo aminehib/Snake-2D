@@ -62,6 +62,7 @@ void change_direction(Snake* s, Direction new_dir) {
         (s->dir == SOUTH && new_dir == NORTH) ||
         (s->dir == EAST  && new_dir == WEST)  ||
         (s->dir == WEST  && new_dir == EAST)) {
+        cout << "Tentative de demi-tour ignorée." << endl;
         return;
     }
     s->dir = new_dir;
