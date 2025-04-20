@@ -35,3 +35,21 @@ void draw_snake(Window* window, Snake* s) {
 
     draw_texture(window, head, s->x * cell_width, s->y * cell_height, cell_width, cell_height);
 }
+
+// Change la direction du Snake, sauf si on demande un demi-tour
+void change_direction(Snake* s, Direction new_dir) {
+    cout << "Changement direction vers : " << new_dir << endl;
+    // Interdire le demi-tour
+    if ((s->dir == NORTH && new_dir == SOUTH) ||
+        (s->dir == SOUTH && new_dir == NORTH) ||
+        (s->dir == EAST  && new_dir == WEST)  ||
+        (s->dir == WEST  && new_dir == EAST)){
+        cout << "→ Demi-tour refusé" << endl;
+        return;
+    }
+
+    // Sinon, on change la direction
+    s->dir = new_dir;
+    cout << "→ Direction changée avec succès" << endl;
+}
+

@@ -4,9 +4,10 @@
 #include "enum.hpp"
 #include "window.hpp"
 
-// Un anneau du corps (on l’utilisera plus tard)
+// Un anneau du corps 
 struct Ring {
     int x, y;
+    FoodType food;
     Ring* prev;
     Ring* next;
 };
@@ -15,12 +16,14 @@ struct Ring {
 struct Snake {
     int x, y;           // Position de la tête
     Direction dir;      // Direction actuelle
-    Ring* tail;         // Corps (sera géré après)
+    Ring* tail;         // premier anneau (queue)
+    Ring* head; // dernier anneau (proche de la tête)
 };
 
 // Fonctions de base
 void init_snake(Snake* s, int x, int y, Direction d);
 void move_snake(Snake* s);
 void draw_snake(Window* window, Snake* s);
+void change_direction(Snake* s, Direction new_dir);
 
 #endif

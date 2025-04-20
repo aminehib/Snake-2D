@@ -107,7 +107,18 @@ void draw_texture(Window* window, SDL_Texture* texture, int x, int y, int w, int
     SDL_RenderCopy(window->sdl_renderer, texture, NULL, &dest);
 }
 
-void draw_text(Window* window, string text, int x, int y) {
+void draw_text(Window* window, string text, int x, int y, int size) {
+    // Ferme la police actuelle temporairement
+    TTF_CloseFont(window->sdl_font);
+
+    // Charge une nouvelle police avec la taille demandée
+    window->sdl_font = TTF_OpenFont("VeraMono.ttf", size);
+    if (!window->sdl_font) {
+        cerr << "Erreur chargement police taille " << size << " : " << TTF_GetError() << endl;
+        return;
+    }
+
+    // Création du texte
     SDL_Surface* surface = TTF_RenderText_Shaded(window->sdl_font, text.c_str(),
                                                  window->foreground, window->background);
     if (!surface) {
@@ -124,6 +135,12 @@ void draw_text(Window* window, string text, int x, int y) {
 
     int w, h;
     SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+
     draw_texture(window, texture, x, y, w, h);
     SDL_DestroyTexture(texture);
+
+    // Recharger police taille normale (20) pour les prochains textes
+    TTF_CloseFont(window->sdl_font);
+    window->sdl_font = TTF_OpenFont("VeraMono.ttf", 20);
 }
+
