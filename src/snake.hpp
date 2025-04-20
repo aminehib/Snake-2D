@@ -3,6 +3,8 @@
 
 #include "enum.hpp"
 #include "window.hpp"
+#include "world.hpp"
+//#include "view.hpp"
 
 // Un anneau du corps 
 struct Ring {
@@ -18,16 +20,14 @@ struct Snake {
     Direction dir;      // Direction actuelle
     Ring* tail;         // premier anneau (queue)
     Ring* head; // dernier anneau (proche de la tête)
+    bool open_mouth; // true = affiche head_open_*, false = head_close_*
 };
 
 // Fonctions de base
 void init_snake(Snake* s, int x, int y, Direction d);
-void move_snake(Snake* s);
+void move_snake(Snake* s, World* world);
 bool check_self_collision(Snake* s);
-void draw_snake(Window* window, Snake* s);
 void change_direction(Snake* s, Direction new_dir);
 void add_ring(Snake* s, FoodType food);
-void draw_body(Window* window, Snake* s);
 void check_triple_color(Snake* s);
-
 #endif

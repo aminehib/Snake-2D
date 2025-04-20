@@ -13,6 +13,10 @@ int main(int argc, char** argv) {
     // === 1. Initialisation de la fenêtre ===
     Window window;
     init_window(&window, 800, 800, "Snaketris - Test Tête Snake");
+    SnakeView snake_view;
+    init_snake_view(&snake_view, &window);
+    
+
 
     // Couleurs de fond (facultatif ici car on affiche avec des textures)
     set_color(&window.background, 255, 255, 255, 255); // fond blanc
@@ -74,12 +78,13 @@ int main(int argc, char** argv) {
     
         // === 2. Déplacement automatique (toutes les 500 ms) ===
         Uint32 now = SDL_GetTicks();
-        if (!gameover && now - last_update > 500) {
-            move_snake(&snake); 
+        if (!gameover && now - last_update > 300) {
+            move_snake(&snake, &world);
+ 
 
             // collision avec soi-même
             if (check_self_collision(&snake)) {
-                cout << "💥 Auto-collision ! GAME OVER " << endl;
+                cout << "Auto-collision ! GAME OVER " << endl;
                 gameover = true;
             }
     
@@ -106,7 +111,6 @@ int main(int argc, char** argv) {
             
                 add_random_food(&world);
             }
-            
 
             last_update = now;
         }
@@ -114,8 +118,8 @@ int main(int argc, char** argv) {
         // === 3. Affichage ===
         clear_window(&window);
         draw_world(&window, &world, &world_view);
-        draw_body(&window, &snake);
-        draw_snake(&window, &snake);
+        draw_snake(&window, &snake, &snake_view);
+
     
         // === 4. Fermeture après game over ===
         if (gameover) {

@@ -12,7 +12,9 @@ using namespace std;
 struct Window {
     SDL_Window* sdl_window;
     SDL_Renderer* sdl_renderer;
-    TTF_Font* sdl_font;
+    TTF_Font* sdl_font;  // taille 20
+    TTF_Font* sdl_font_big;    // taille 80 (GAME OVER)
+
     int width;
     int height;
     SDL_Color background;
@@ -22,6 +24,17 @@ struct Window {
     SDL_Texture* head_down;
     SDL_Texture* head_left;
     SDL_Texture* head_right;
+    // === Textures des têtes (ouverte)
+    SDL_Texture* head_open_up;
+    SDL_Texture* head_open_down;
+    SDL_Texture* head_open_left;
+    SDL_Texture* head_open_right;
+
+    // === Textures des têtes (fermée)
+    SDL_Texture* head_close_up;
+    SDL_Texture* head_close_down;
+    SDL_Texture* head_close_left;
+    SDL_Texture* head_close_right;
     // Textures du corps du serpent selon l'anneau
     SDL_Texture* body_red;
     SDL_Texture* body_green;

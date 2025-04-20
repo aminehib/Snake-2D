@@ -27,38 +27,69 @@ void init_window(Window* window, int width, int height, string title) {
     // Définir le titre de la fenêtre
     SDL_SetWindowTitle(window->sdl_window, title.c_str());
 
-    // Chargement de la police pour l'affichage de texte
+    // Chargement de la police
     window->sdl_font = TTF_OpenFont("VeraMono.ttf", 20);
     if (window->sdl_font == nullptr) {
         cerr << "Erreur chargement police: " << TTF_GetError() << endl;
         SDL_Quit();
     }
 
-    // Chargement des textures de la tête du serpent selon la direction
-    // Ces images sont nécessaires pour dessiner correctement la tête qui regarde dans la bonne direction
-    window->head_up    = load_image(window, "img/head_open_up.png");
-    window->head_down  = load_image(window, "img/head_open_down.png");
-    window->head_left  = load_image(window, "img/head_open_left.png");
-    window->head_right = load_image(window, "img/head_open_right.png");
-    
+    window->sdl_font_big = TTF_OpenFont("VeraMono.ttf", 80);
+    if (!window->sdl_font_big) {
+        cerr << "Erreur chargement police (60) : " << TTF_GetError() << endl;
+    }
+
+    // === Têtes du serpent : ouvertes
+    window->head_open_up    = load_image(window, "img/head_open_up.png");
+    window->head_open_down  = load_image(window, "img/head_open_down.png");
+    window->head_open_left  = load_image(window, "img/head_open_left.png");
+    window->head_open_right = load_image(window, "img/head_open_right.png");
+
+    // === Têtes du serpent : fermées
+    window->head_close_up    = load_image(window, "img/head_close_up.png");
+    window->head_close_down  = load_image(window, "img/head_close_down.png");
+    window->head_close_left  = load_image(window, "img/head_close_left.png");
+    window->head_close_right = load_image(window, "img/head_close_right.png");
+
+    // === Corps du serpent
     window->body_red   = load_image(window, "img/body_red.png");
     window->body_green = load_image(window, "img/body_green.png");
     window->body_blue  = load_image(window, "img/body_blue.png");
-
 }
+
 
 
 
 void close_window(Window* window) {
+    // Libération de la police
     TTF_CloseFont(window->sdl_font);
-    SDL_DestroyRenderer(window->sdl_renderer);
-    SDL_DestroyWindow(window->sdl_window);
+    TTF_CloseFont(window->sdl_font_big);
+
+    // Libération des textures des têtes (ouverte et fermée)
+    SDL_DestroyTexture(window->head_open_up);
+    SDL_DestroyTexture(window->head_open_down);
+    SDL_DestroyTexture(window->head_open_left);
+    SDL_DestroyTexture(window->head_open_right);
+
+    SDL_DestroyTexture(window->head_close_up);
+    SDL_DestroyTexture(window->head_close_down);
+    SDL_DestroyTexture(window->head_close_left);
+    SDL_DestroyTexture(window->head_close_right);
+
+    // Libération des textures du corps
     SDL_DestroyTexture(window->body_red);
     SDL_DestroyTexture(window->body_green);
     SDL_DestroyTexture(window->body_blue);
+
+    // Libération du renderer et de la fenêtre
+    SDL_DestroyRenderer(window->sdl_renderer);
+    SDL_DestroyWindow(window->sdl_window);
+
+    // Arrêt de SDL_TTF et SDL
     TTF_Quit();
     SDL_Quit();
 }
+
 
 void set_color(SDL_Color* dst, int r, int g, int b, int a) {
     dst->r = r;
@@ -116,18 +147,20 @@ void draw_texture(Window* window, SDL_Texture* texture, int x, int y, int w, int
 }
 
 void draw_text(Window* window, string text, int x, int y, int size) {
-    // Ferme la police actuelle temporairement
-    TTF_CloseFont(window->sdl_font);
+    TTF_Font* font = nullptr;
 
-    // Charge une nouvelle police avec la taille demandée
-    window->sdl_font = TTF_OpenFont("VeraMono.ttf", size);
-    if (!window->sdl_font) {
-        cerr << "Erreur chargement police taille " << size << " : " << TTF_GetError() << endl;
+    if (size >= 60) {
+        font = window->sdl_font_big;
+    } else {
+        font = window->sdl_font;
+    }
+
+    if (!font) {
+        cerr << "Erreur : police non chargée pour taille " << size << endl;
         return;
     }
 
-    // Création du texte
-    SDL_Surface* surface = TTF_RenderText_Shaded(window->sdl_font, text.c_str(),
+    SDL_Surface* surface = TTF_RenderText_Shaded(font, text.c_str(),
                                                  window->foreground, window->background);
     if (!surface) {
         cerr << "Erreur surface TTF : " << TTF_GetError() << endl;
@@ -143,12 +176,6 @@ void draw_text(Window* window, string text, int x, int y, int size) {
 
     int w, h;
     SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-
     draw_texture(window, texture, x, y, w, h);
     SDL_DestroyTexture(texture);
-
-    // Recharger police taille normale (20) pour les prochains textes
-    TTF_CloseFont(window->sdl_font);
-    window->sdl_font = TTF_OpenFont("VeraMono.ttf", 20);
 }
-
