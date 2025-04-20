@@ -97,10 +97,11 @@ int main(int argc, char** argv) {
             
                 // Nourriture étoile → ne pas ajouter d’anneau, mais activer le tetris
                 if (eaten == STAR) {
-                    cout << "🌟 Nourriture étoile mangée → effet TETRIS activé !" << endl;
+                    cout << "Nourriture étoile mangée → effet TETRIS activé !" << endl;
                     check_triple_color(&snake);
                 } else {
                     add_ring(&snake, eaten);            // Ajoute un anneau de couleur
+                    check_triple_color(&snake);
                 }
             
                 add_random_food(&world);
