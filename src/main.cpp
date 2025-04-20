@@ -6,10 +6,16 @@
 #include "world.hpp"
 #include "view.hpp"
 #include "snake.hpp"
-
+#include "save.hpp"
 using namespace std;
 
 int main(int argc, char** argv) {
+
+    string save_file = "save.txt"; 
+    if (argc > 1) {
+        save_file = argv[1];
+    }
+
     // === 1. Initialisation de la fenêtre ===
     Window window;
     init_window(&window, 800, 800, "Snaketris - Test Tête Snake");
@@ -72,6 +78,25 @@ int main(int argc, char** argv) {
                     case SDLK_RIGHT:
                         change_direction(&snake, EAST);
                         break;
+                        case SDLK_s:
+                        save_game(&snake, &world, save_file);
+                        cout << "✅ Partie sauvegardée dans le fichier : " << save_file << endl;
+                        cout << "Appuyez sur O pour continuer ou N pour quitter." << endl;
+                    
+                        bool decision_attendue = true;
+                        while (decision_attendue && SDL_WaitEvent(&event)) {
+                            if (event.type == SDL_KEYDOWN) {
+                                if (event.key.keysym.sym == SDLK_n) {
+                                    quit = true;
+                                    decision_attendue = false;
+                                } else if (event.key.keysym.sym == SDLK_o) {
+                                    decision_attendue = false;
+                                }
+                            }
+                        }
+                        break;
+                    
+
                 }
             }
         }

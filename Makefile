@@ -30,5 +30,5 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # Nettoyage
 clean:
-	rm -rf $(OBJ_DIR)/*.o $(EXE)
+	rm -rf $(OBJ_DIR)/*.o $(EXE) save.txt
 
