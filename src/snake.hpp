@@ -25,5 +25,7 @@ void init_snake(Snake* s, int x, int y, Direction d);
 void move_snake(Snake* s);
 void draw_snake(Window* window, Snake* s);
 void change_direction(Snake* s, Direction new_dir);
+void add_ring(Snake* s, FoodType food);
+void draw_body(Window* window, Snake* s);
 
 #endif

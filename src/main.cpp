@@ -20,6 +20,12 @@ int main(int argc, char** argv) {
     // === 2. Initialisation du monde ===
     World world;
     init_world(&world, 10, 10); // monde 10x10 vide
+        // Ajout initial de nourritures
+    int nb_food = 1 + rand() % 2; // soit 1 soit 2
+    for (int i = 0; i < nb_food; ++i) {
+        add_random_food(&world);
+    }
+
 
     // === 3. Initialisation de l'affichage des textures nourriture ===
     WorldView world_view;
@@ -68,21 +74,30 @@ int main(int argc, char** argv) {
         // === 2. Déplacement automatique (toutes les 500 ms) ===
         Uint32 now = SDL_GetTicks();
         if (!gameover && now - last_update > 500) {
-            move_snake(&snake); // d'abord bouger...
+            move_snake(&snake); 
     
-            // ...ensuite vérifier les collisions
+            // vérifier les collisions
             if (snake.x < 0 || snake.x >= world.width ||
                 snake.y < 0 || snake.y >= world.height) {
-                cout << "💥 Le Snake a touché un mur ! GAME OVER" << endl;
+                cout << " Le Snake a touché un mur ! GAME OVER" << endl;
                 gameover = true;
             }
-    
+
+            // Vérifie si le Snake mange une nourriture
+            FoodType eaten = get_food(&world, snake.x, snake.y);
+            if (eaten != NONE) {
+                set_food(&world, snake.x, snake.y, NONE);  // retirer la nourriture
+                add_ring(&snake, eaten);  // Ajout d'un anneau 
+                add_random_food(&world);  // remplacer la nourriture
+            }
+
             last_update = now;
         }
     
         // === 3. Affichage ===
         clear_window(&window);
         draw_world(&window, &world, &world_view);
+        draw_body(&window, &snake);
         draw_snake(&window, &snake);
     
         // === 4. Fermeture après game over ===

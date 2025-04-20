@@ -22,7 +22,10 @@ struct Window {
     SDL_Texture* head_down;
     SDL_Texture* head_left;
     SDL_Texture* head_right;
-
+    // Textures du corps du serpent selon l'anneau
+    SDL_Texture* body_red;
+    SDL_Texture* body_green;
+    SDL_Texture* body_blue;
 
 };
 

@@ -40,6 +40,11 @@ void init_window(Window* window, int width, int height, string title) {
     window->head_down  = load_image(window, "img/head_open_down.png");
     window->head_left  = load_image(window, "img/head_open_left.png");
     window->head_right = load_image(window, "img/head_open_right.png");
+    
+    window->body_red   = load_image(window, "img/body_red.png");
+    window->body_green = load_image(window, "img/body_green.png");
+    window->body_blue  = load_image(window, "img/body_blue.png");
+
 }
 
 
@@ -48,6 +53,9 @@ void close_window(Window* window) {
     TTF_CloseFont(window->sdl_font);
     SDL_DestroyRenderer(window->sdl_renderer);
     SDL_DestroyWindow(window->sdl_window);
+    SDL_DestroyTexture(window->body_red);
+    SDL_DestroyTexture(window->body_green);
+    SDL_DestroyTexture(window->body_blue);
     TTF_Quit();
     SDL_Quit();
 }
