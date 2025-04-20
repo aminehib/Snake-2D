@@ -2,32 +2,47 @@
 #include <iostream>
 
 void init_window(Window* window, int width, int height, string title) {
+    // Initialisation de SDL pour la vidéo
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         cerr << "Erreur SDL_Init: " << SDL_GetError() << endl;
         SDL_Quit();
     }
 
+    // Initialisation de SDL_TTF pour afficher du texte
     if (TTF_Init() < 0) {
         cerr << "Erreur TTF_Init: " << TTF_GetError() << endl;
         SDL_Quit();
     }
 
+    // Enregistrement des dimensions de la fenêtre
     window->width = width;
     window->height = height;
 
+    // Création de la fenêtre et du renderer SDL
     if (SDL_CreateWindowAndRenderer(width, height, 0, &window->sdl_window, &window->sdl_renderer) < 0) {
         cerr << "Erreur création fenêtre/rendu: " << SDL_GetError() << endl;
         SDL_Quit();
     }
 
+    // Définir le titre de la fenêtre
     SDL_SetWindowTitle(window->sdl_window, title.c_str());
 
+    // Chargement de la police pour l'affichage de texte
     window->sdl_font = TTF_OpenFont("VeraMono.ttf", 20);
     if (window->sdl_font == nullptr) {
         cerr << "Erreur chargement police: " << TTF_GetError() << endl;
         SDL_Quit();
     }
+
+    // Chargement des textures de la tête du serpent selon la direction
+    // Ces images sont nécessaires pour dessiner correctement la tête qui regarde dans la bonne direction
+    window->head_up    = load_image(window, "img/head_open_up.png");
+    window->head_down  = load_image(window, "img/head_open_down.png");
+    window->head_left  = load_image(window, "img/head_open_left.png");
+    window->head_right = load_image(window, "img/head_open_right.png");
 }
+
+
 
 void close_window(Window* window) {
     TTF_CloseFont(window->sdl_font);

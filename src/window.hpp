@@ -17,6 +17,13 @@ struct Window {
     int height;
     SDL_Color background;
     SDL_Color foreground;
+    // Textures de la tête du serpent selon la direction
+    SDL_Texture* head_up;
+    SDL_Texture* head_down;
+    SDL_Texture* head_left;
+    SDL_Texture* head_right;
+
+
 };
 
 void init_window(Window* window, int width, int height, string title);
