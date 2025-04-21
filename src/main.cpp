@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 
     // === 2. Initialisation du monde ===
     World world;
-    init_world(&world, 10, 10); // monde 10x10 vide
+    init_world(&world, 20, 20); // monde 10x10 vide
         // Ajout initial de nourritures
     int nb_food = 1 + rand() % 2; // soit 1 soit 2
     for (int i = 0; i < nb_food; ++i) {
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
     
         // === 2. Déplacement automatique (toutes les 500 ms) ===
         Uint32 now = SDL_GetTicks();
-        if (!gameover && now - last_update > 300) {
+        if (!gameover && now - last_update > 250) {
             move_snake(&snake, &world);
  
 

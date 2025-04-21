@@ -74,8 +74,8 @@ void init_snake_view(SnakeView* view, Window* window) {
 
 // Affiche la tête + le corps du serpent avec textures directionnelles
 void draw_snake(Window* window, Snake* s, SnakeView* sv) {
-    int cell_width  = window->width / 10;
-    int cell_height = window->height / 10;
+    int cell_width = window->width / 20;
+    int cell_height = window->height / 20;
 
     // === Affichage de la tête ===
     SDL_Texture* head = nullptr;
@@ -97,7 +97,7 @@ void draw_snake(Window* window, Snake* s, SnakeView* sv) {
             case WEST:  head = sv->head_close_left; break;
         }
     }
-    int margin_head = cell_width * 0.075;
+    int margin_head = cell_width * 0.05;
     draw_texture(window, head,
                  s->x * cell_width + margin_head,
                  s->y * cell_height + margin_head,
@@ -118,7 +118,7 @@ void draw_snake(Window* window, Snake* s, SnakeView* sv) {
 
         // Sauter l’anneau qui est exactement sur la tête
         if (current->x != s->x || current->y != s->y) {
-            int margin_body = cell_width * 0.075; 
+            int margin_body = cell_width * 0.05; 
             draw_texture(window, body,
                          current->x * cell_width + margin_body,
                          current->y * cell_height + margin_body,
