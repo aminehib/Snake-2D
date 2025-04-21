@@ -128,8 +128,10 @@ int main(int argc, char** argv) {
                 // Nourriture étoile → ne pas ajouter d’anneau, mais activer le tetris
                 if (eaten == STAR) {
                     cout << "Nourriture étoile mangée → effet TETRIS activé !" << endl;
+                    snake.score += 5; // Bonus étoile
                     check_triple_color(&snake);
                 } else {
+                    snake.score += 1; // Nourriture normale
                     add_ring(&snake, eaten);            // Ajoute un anneau de couleur
                     check_triple_color(&snake);
                 }
@@ -144,6 +146,9 @@ int main(int argc, char** argv) {
         clear_window(&window);
         draw_world(&window, &world, &world_view);
         draw_snake(&window, &snake, &snake_view);
+        set_color(&window.foreground, 0, 0, 0, 255); // texte en noir
+        draw_text(&window, "Score : " + to_string(snake.score), 10, 10, 20);
+
 
     
         // === 4. Fermeture après game over ===

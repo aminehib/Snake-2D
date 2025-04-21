@@ -21,6 +21,8 @@ struct Snake {
     Ring* tail;         // premier anneau (queue)
     Ring* head; // dernier anneau (proche de la tête)
     bool open_mouth; // true = affiche head_open_*, false = head_close_*
+    int score; // score du joueur
+
 };
 
 // Fonctions de base

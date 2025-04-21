@@ -8,6 +8,8 @@ void init_snake(Snake* s, int x, int y, Direction d) {
     s->dir = d;
     s->head = nullptr;
     s->tail = nullptr;
+    s->score = 0;
+
 }
 
 // Déplacement du serpent (tête + anneaux)
@@ -87,7 +89,7 @@ void add_ring(Snake* s, FoodType food) {
 }
 
 // Supprime le milieu d’un triplet de même couleur
-void check_triple_color(Snake* s) {
+void check_triple_color(Snake* s){
     Ring* r = s->tail;
     while (r && r->next && r->next->next) {
         FoodType a = r->food;
@@ -103,6 +105,9 @@ void check_triple_color(Snake* s) {
             if (s->tail == mid) s->tail = mid->next;
 
             delete mid;
+            s->score -= 1;
+            if (s->score < 0) s->score = 0; // protection
+
             std::cout << " Triplet détecté : anneau du milieu supprimé." << std::endl;
             return;
         }
